@@ -4,7 +4,7 @@
  * после авторизации или его выхода из системы
  * */
 
-class UserWidget extends BaseConstructor {
+class UserWidget {
   /**
    * Устанавливает полученный элемент
    * в свойство element.
