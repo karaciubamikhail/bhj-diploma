@@ -35,15 +35,10 @@ class AsyncForm extends BaseConstructor {
    *  'название поля формы 2': 'значение поля формы 2'
    * }
    * */
-  getData() {
-    const formData = new FormData(this.element);
-    const encodedData = {};
-
-    for (let item of formData.entries()) {
-      encodedData[item[0]] = item[1];
-    }
-    return encodedData;
-  }
+getData() {
+  const formData = new FormData(this.element);
+  return Object.fromEntries(formData.entries());
+}
 
   onSubmit(options) {}
 
