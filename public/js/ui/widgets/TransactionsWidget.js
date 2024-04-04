@@ -4,7 +4,7 @@
  * создания нового дохода или расхода
  * */
 
-class TransactionsWidget extends BaseConstructor {
+class TransactionsWidget {
   /**
    * Устанавливает полученный элемент
    * в свойство element.
