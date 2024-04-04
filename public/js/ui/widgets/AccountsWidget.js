@@ -3,7 +3,7 @@
  * отображения счетов в боковой колонке
  * */
 
-class AccountsWidget extends BaseConstructor {
+class AccountsWidget {
   /**
    * Устанавливает текущий элемент в свойство element
    * Регистрирует обработчики событий с помощью
