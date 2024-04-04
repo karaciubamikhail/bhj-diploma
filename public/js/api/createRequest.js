@@ -17,20 +17,13 @@ const createRequest = (options = {}) => {
         }
     }
 
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            let err = null;
-            let response = null;
-
-            if (xhr.status == 200) {
+    xhr.load = () => {
                 const r = xhr.response;
                 if (r && r.success) {
                     response = r;
                 } else {
                     err = r;
                 }
-            } else {
-                err = new Error('Ошибка')
             }
             options.callback(err, response)
         };
