@@ -1,55 +1,48 @@
-/**
- * Класс User управляет авторизацией, выходом и
- * регистрацией пользователя из приложения
- * Имеет свойство URL, равное '/user'.
- * */
 class User {
+
+  static URL = '/user';
+
   /**
    * Устанавливает текущего пользователя в
    * локальном хранилище.
-   * */
-  static url = '/user';
-
+   */
   static setCurrent(user) {
-     window.localStorage.user = JSON.stringify(user);
+    localStorage.setItem('user', JSON.stringify(user));
   }
 
   /**
    * Удаляет информацию об авторизованном
    * пользователе из локального хранилища.
-   * */
+   */
   static unsetCurrent() {
-    window.localStorage.removeItem('user');
+    localStorage.removeItem('user');
   }
 
   /**
    * Возвращает текущего авторизованного пользователя
    * из локального хранилища
-   * */
+   */
   static current() {
-    try {
-      return JSON.parse(window.localStorage.user);
-    } catch {
-        return undefined;
-    }
+    // Сокращаем реализацию метода с помощью использования метода getItem
+    return JSON.parse(localStorage.getItem('user'));
   }
 
   /**
    * Получает информацию о текущем
    * авторизованном пользователе.
-   * */
+   */
   static fetch(callback) {
     createRequest({
-      url: this.url + '/current',
+      url: this.URL + '/current',
       method: 'GET',
-      callback: (error, response) => {
-          if (response && response.user) {
-              this.setCurrent(response.user);
-          } else {
-              this.unsetCurrent();
-          }
-          callback(error, response);
-      }
+      callback: (err, response) => {
+        if (response && response.success) {
+          this.setCurrent(response.user);
+        } else {
+          this.unsetCurrent();
+        }
+        callback(err, response);
+      },
     });
   }
 
@@ -58,17 +51,18 @@ class User {
    * После успешной авторизации необходимо
    * сохранить пользователя через метод
    * User.setCurrent.
-   * */
-   static login(data, callback) {
+   */
+  static login(data, callback) {
     createRequest({
-      url: this.url + '/login',
+      url: this.URL + '/login',
       method: 'POST',
-      body: data,
-      callback: (error, response) => {
+      responseType: 'json',
+      data,
+      callback: (err, response) => {
         if (response && response.user) {
           this.setCurrent(response.user);
         }
-        callback(error, response);
+        callback(err, response);
       }
     });
   }
@@ -78,17 +72,19 @@ class User {
    * После успешной авторизации необходимо
    * сохранить пользователя через метод
    * User.setCurrent.
-   * */
+   */
   static register(data, callback) {
     createRequest({
+      url: this.URL + '/register',
       method: 'POST',
-      url: this.url + '/register',
-      body: data,
-      callback: (error, response) => {
-        if (response && response.user) {
+      responseType: 'json',
+      data,
+      callback: (err, response) => {
+        if (response && response.success && response.user) {
+          // Добавляем комментарий о проверке успешной регистрации
           this.setCurrent(response.user);
         }
-        callback(error, response);
+        callback(err, response);
       }
     });
   }
@@ -96,19 +92,19 @@ class User {
   /**
    * Производит выход из приложения. После успешного
    * выхода необходимо вызвать метод User.unsetCurrent
-   * */
+   */
   static logout(callback) {
-    if (confirm('Вы действительно хотите выйти из личного кабинета?')) {
-      createRequest({
-        method: 'POST',
-        url: this.url + '/logout',
-        callback: (error, response) => {
-          if (response.success) {
-            this.unsetCurrent();
-          }
-          callback(error, response);
+    createRequest({
+      url: this.URL + '/logout',
+      method: 'POST',
+      responseType: 'json',
+      callback: (err, response) => {
+        if (response && response.success) {
+          // Добавляем комментарий о проверке успешного выхода
+          this.unsetCurrent();
         }
-      });
-    }
+        callback(err, response);
+      },
+    });
   }
 }

@@ -11,8 +11,11 @@ class TransactionsWidget {
    * Если переданный элемент не существует,
    * необходимо выкинуть ошибку.
    * */
-  constructor(element) {
-    super (element);
+  constructor( element ) {
+    if (!element) {
+      throw new Error('Элемент не может быть пустым');
+    }
+    this.element = element;
     this.registerEvents();
   }
   /**
@@ -22,7 +25,17 @@ class TransactionsWidget {
    * экземпляра окна
    * */
   registerEvents() {
-    this.element.querySelector('.create-income-button').addEventListener('click', () => App.getModal('newIncome').open());
-    this.element.querySelector('.create-expense-button').addEventListener('click', () => App.getModal('newExpense').open());
+    const createIncomeButton = this.element.querySelector('.create-income-button');
+    const createExpenseButton = this.element.querySelector('.create-expense-button');
+
+    createIncomeButton.addEventListener('click', () => {
+      const modal = App.getModal('newIncome');
+      modal.open();
+    });
+
+    createExpenseButton.addEventListener('click', () => {
+      const modal = App.getModal('newExpense');
+      modal.open();
+    });
   }
 }

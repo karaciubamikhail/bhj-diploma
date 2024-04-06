@@ -1,62 +1,49 @@
-/**
- * Класс CreateTransactionForm управляет формой
- * создания новой транзакции
- * */
 class CreateTransactionForm extends AsyncForm {
-  /**
-   * Вызывает родительский конструктор и
-   * метод renderAccountsList
-   * */
   constructor(element) {
     super(element);
     this.renderAccountsList();
   }
 
-  /**
-   * Получает список счетов с помощью Account.list
-   * Обновляет в форме всплывающего окна выпадающий список
-   * */
   renderAccountsList() {
-    const accountList = this.element.querySelector('.accounts-select');
+    const selectElement = this.element.querySelector('.accounts-select');
 
-    if (User.current()) {
-      Account.list(User.current(), (error, response) => {
-        accountList.replaceChildren();
-
-        if (response.data.length > 0) {
-            response.data.forEach((element) => {
-                addAccount(element);
-            });
-        } else {
-          const emptyOption = document.createElement('option');
-          emptyOption.textContent = 'Нет данных';
-          accountList.appendChild(emptyOption);
-        }
-      });
-
-      function addAccount(item) {
-        const accountOption = document.createElement('option');
-        accountOption.value = item.id;
-        accountOption.textContent = item.name;
-        accountList.appendChild(accountOption);
-      }
+    // Добавляем проверку на авторизованного пользователя
+    if (!User.current()) {
+      console.error('Пользователь не авторизован');
+      return;
     }
+
+    Account.list({}, (err, response) => {
+      if (err) {
+        console.error('Ошибка при загрузке счетов:', err);
+        return;
+      }
+
+      const accounts = response.data;
+
+      // Накопление разметки с помощью reduce
+      const optionsHTML = accounts.reduce((html, account) => {
+        html += `<option value="${account.id}">${account.name}</option>`;
+        return html;
+      }, '');
+
+      // Присвоение разметки одним действием
+      selectElement.innerHTML = optionsHTML;
+    });
   }
 
-  /**
-   * Создаёт новую транзакцию (доход или расход)
-   * с помощью Transaction.create. По успешному результату
-   * вызывает App.update(), сбрасывает форму и закрывает окно,
-   * в котором находится форма
-   * */
   onSubmit(data) {
-    Transaction.create(data, (error, response) => {
-      if (response.success) {
-          this.element.reset();
-          App.getModal('newIncome').close();
-          App.getModal('newExpense').close();
-          App.update();
+    Transaction.create(data, (err, response) => {
+      if (err) {
+        console.error('Ошибка создания транзакции:', err);
+        return;
       }
+
+      this.element.reset();
+      const modalId = this.element.closest('.modal').dataset.modalId;
+      const modal = App.getModal(modalId);
+      modal.close();
+      App.update();
     });
   }
 }

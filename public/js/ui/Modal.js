@@ -12,7 +12,10 @@ class Modal {
    * необходимо выкинуть ошибку.
    * */
   constructor(element){
-    super (element);
+    if (!element) {
+      throw new Error('Переданный элемент не существует');
+    }
+    this.element = element;
     this.registerEvents();
   }
 
@@ -22,11 +25,10 @@ class Modal {
    * (с помощью метода Modal.onClose)
    * */
   registerEvents() {
-    this.element.querySelectorAll('button[data-dismiss="modal"]').forEach(element => {
-      element.addEventListener('click', (event) => {
-          this.onClose(event);
-      });
-  })
+    const closeButton = this.element.querySelector('[data-dismiss="modal"]');
+    if (closeButton) {
+      closeButton.addEventListener('click', (e) => this.onClose(e));
+    }
   }
 
   /**
@@ -34,6 +36,7 @@ class Modal {
    * Закрывает текущее окно (Modal.close())
    * */
   onClose(e) {
+    e.preventDefault();
     this.close();
   }
   /**
