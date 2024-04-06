@@ -11,11 +11,11 @@ class UserWidget {
    * Если переданный элемент не существует,
    * необходимо выкинуть ошибку.
    * */
-  constructor(element){
+  constructor(element) {
     if (!element) {
-      throw new Error('Элемент не может быть пустым');
+      throw new Error("Невалидное значение для UserWidget")
     }
-    this.element = element;
+    this.element = element
   }
 
   /**
@@ -25,16 +25,10 @@ class UserWidget {
    * в элемент .user-name устанавливает имя
    * авторизованного пользователя
    * */
-  update(){
-    // const currentUser = User.current();
-    // const nameUser = this.element.querySelector('.user-name');
-    // nameUser.textContent = currentUser.name;
-    const currentUser = User.current();
-    if (currentUser) {
-        const nameUser = this.element.querySelector('.user-name');
-        nameUser.textContent = currentUser.name;
-    } else {
-        console.error('Данные о текущем пользователе не были получены');
+  update() {
+    if (User.current()) {
+      const userName = document.querySelector(".user-name")
+      userName.textContent = User.current().name
+    }
   }
-} 
 }

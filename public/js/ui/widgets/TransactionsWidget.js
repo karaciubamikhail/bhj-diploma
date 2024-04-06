@@ -11,12 +11,12 @@ class TransactionsWidget {
    * Если переданный элемент не существует,
    * необходимо выкинуть ошибку.
    * */
-  constructor( element ) {
+  constructor(element) {
     if (!element) {
-      throw new Error('Элемент не может быть пустым');
+      throw new Error("Невалидное значение для TransactionsWidget")
     }
-    this.element = element;
-    this.registerEvents();
+    this.element = element
+    this.registerEvents()
   }
   /**
    * Регистрирует обработчики нажатия на
@@ -25,17 +25,21 @@ class TransactionsWidget {
    * экземпляра окна
    * */
   registerEvents() {
-    const createIncomeButton = this.element.querySelector('.create-income-button');
-    const createExpenseButton = this.element.querySelector('.create-expense-button');
-
-    createIncomeButton.addEventListener('click', () => {
-      const modal = App.getModal('newIncome');
-      modal.open();
-    });
-
-    createExpenseButton.addEventListener('click', () => {
-      const modal = App.getModal('newExpense');
-      modal.open();
-    });
+    const transactionBtns = document.querySelectorAll(
+      ".transactions-panel > button"
+    )
+    transactionBtns.forEach((button) => {
+      button.addEventListener("click", (ev) => {
+        ev.preventDefault()
+        switch (ev.target.closest("button").classList[3]) {
+          case "create-income-button":
+            App.getModal("newIncome").open()
+            break
+          case "create-expense-button":
+            App.getModal("newExpense").open()
+            break
+        }
+      })
+    })
   }
 }
